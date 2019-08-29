@@ -1,4 +1,4 @@
-[TOC]
+
 
 # fresh-recomsystem
 
@@ -7,12 +7,14 @@
 
 
 1） `program structure:`
+
 	`root: config, data, model, utility, notes, paper, __init__.py, README.md`
         `data: bookcross, hetrec2011-delicious-2k, lastfm-dataset-360K, ml-1m, soc-Epinions1, soc-Slashdot0902, __init__.py`
 
 
 
 2） `Download websites of dataset associated:`
+
 	`ml-1m: http://files.grouplens.org/datasets/movielens/ml-1m.zip`
 	`delicious-2k: http://files.grouplens.org/datasets/hetrec2011/hetrec2011-delicious-2k.zip`
 	`lastfm-dataset-360K: http://mtg.upf.edu/static/datasets/last.fm/lastfm-dataset-360K.tar.gz`
