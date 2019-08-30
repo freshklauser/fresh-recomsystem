@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: F1684324
 # @Date:   2019-08-28 16:40:23
-# @Last Modified by:   Klaus
-# @Last Modified time: 2019-08-30 22:21:21
+# @Last Modified by:   sniky-lyu
+# @Last Modified time: 2019-08-30 23:00:02
 # ------------------------------------------------------------------------------
 # Description:
 # MostPopular
@@ -78,7 +78,8 @@ def GenderMostPopular(train, profile, N):
         elif profile[user]['gender'] == 'f':
             recs = [x for x in fitems if x[0] not in seen_items][:N]
         else:
-            recs = mostPopular(user)                                # 没有提供性别信息的，按照MostPopular推荐
+            # 没有提供性别信息的，按照MostPopular推荐
+            recs = mostPopular(user)
         return recs
 
     return GetRecommendation
@@ -92,14 +93,47 @@ def AgeMostPopular(train, profile, N):
     :return: GetRecommendation, 获取推荐结果的接口
     '''
     # 年龄分段
-    ages = set()
+    ages = []
     for user in profile.keys():
+        # if not isinstance(profile[user]['age'], int):
+        #     print(profile[user]['age'], type(profile[user]['age']), '---------')
+        #     raise TypeError
+        #     break
         if profile[user]['age'] >= 0:
-            ages.add(profile[user]['age'])
+            ages.append(profile[user]['age'])
     maxAge, minAge = max(ages), min(ages)
-    items = [{} for _ in range(int(maxAge) // 10 + 1)]              # 分成 int(maxAge) // 10 +1 个年龄段，再汇总每个年龄段的popular物品
+    # 分成 int(maxAge)//10+1 个年龄段(10岁一个年龄段)，再汇总每个年龄段的popular物品
+    items = [{} for _ in range(int(maxAge) // 10 + 1)]
 
     # 汇总统计每个年龄段的物品列表（按流行度降序）
+    for user in train:
+        if profile[user]['age'] >= 0:
+            age = profile[user]['age'] // 10
+            for i in train[user]:
+                if i not in items[age]:
+                    items[age][i] = 0
+                items[age][i] += 1
+    # 对每个年龄段的populary item进行降序排列
+    for row in range(len(items)):
+        items[row] = sorted(items[row].items(),
+                            key=lambda x: x[1], reverse=True)
+    # 没有标注年龄的采用MostPopulary进行推荐
+    mostPopular = MostPopular(train, profile, N)
+
+    def GetRecommendation(user):
+        seen_items = set(train[user]) if user in train else set()
+        if profile[user]['age'] >= 0:
+            age = profile[user]['age'] // 10
+            # 年龄信息异常，MostPopular推荐
+            if age >= len(items) or len(items[age]) == 0:
+                recs = mostPopular(user)
+            else:
+                recs = [x for x in items[age] if x[0] not in seen_items][:N]
+        else:   # 没有提供年龄信息或为负的
+            recs = mostPopular(user)
+        return recs
+
+    return GetRecommendation
 
 
 def CountryMostPopular(train, profile, N):
@@ -161,6 +195,6 @@ if __name__ == '__main__':
     # train, test, profile = dataset.splitData(5, 2)
     M = 5
     N = 10
-    method = 'GenderMostPopular'
+    method = 'AgeMostPopular'
     exp = Experiment(M, N, method=method)
     exp.run()

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: F1684324
 # @Date:   2019-08-28 09:56:29
-# @Last Modified by:   Klaus
-# @Last Modified time: 2019-08-30 22:18:34
+# @Last Modified by:   sniky-lyu
+# @Last Modified time: 2019-08-30 22:59:06
 # ------------------------------------------------------------------------------
 # Description:
 # Notes:
@@ -72,7 +72,7 @@ class Dataset():
                     user, gender, age, country = line.strip().split('\t')[:-1]
                     if age == '':                                               # gender也有缺失值，这里没处理
                         age = -1
-                    profile[user] = {'gender': gender, 'age': age, 'country': country}
+                    profile[user] = {'gender': gender, 'age': int(age), 'country': country}
                     count += 1
                 except UnicodeEncodeError:
                     pass
