@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Klaus
 # @Date:   2019-08-22 20:20:02
-# @Last Modified by:   kkkk
-# @Last Modified time: 2019-08-29 14:18:40
+# @Last Modified by:   sniky-lyu
+# @Last Modified time: 2019-08-30 22:22:56
 # ------------------------------------------------------------------------------
 # 隐语义模型
 # ------------------------------------------------------------------------------
@@ -157,8 +157,7 @@ class Experiment():
             metric = self.worker(train, test)
             metrics = {k: metrics[k] + metric[k] for k in metrics.keys()}
         metrics = {k: metrics[k] / self.M for k in metrics.keys()}
-        print('Average Result (M={}, N={}, ratio={}): {}'.format(
-            self.M, self.N, self.ratio, metrics))
+        print('Average Result (M={}, N={}, ratio={}): {}'.format(self.M, self.N, self.ratio, metrics))
 
 
 if __name__ == '__main__':
