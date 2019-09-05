@@ -2,7 +2,7 @@
 # @Author: F1684324
 # @Date:   2019-08-28 16:40:23
 # @Last Modified by:   sniky-lyu
-# @Last Modified time: 2019-08-30 23:00:02
+# @Last Modified time: 2019-09-05 23:43:23
 # ------------------------------------------------------------------------------
 # Description:
 # MostPopular
@@ -14,7 +14,6 @@
 # 1) adit = {"a": 1, "b": 2}; temp = adit; temp['c'] = 3, 则 adit = {"a": 1, "b": 2, "c": 3}
 # 2) 若 temp = adit.copy(); temp['d'] = 12, 则 adit不变，仍是 adit = {"a": 1, "b": 2, "c": 3}
 # ------------------------------------------------------------------------------
-
 import sys
 sys.path.append('..')
 
@@ -37,11 +36,13 @@ def MostPopular(train, profile, N):
             if item not in items:
                 items[item] = 0
             items[item] += 1
+    # items: [(music1, pop1), (music2, pop2), ...]
     items = sorted(items.items(), key=lambda x: x[1], reverse=True)
-    # 获取接口函数
 
+    # 获取接口函数
     def GetRecommendation(user):
         seen_items = set(train[user]) if user in train else set()
+        # x: ('b10bbbfc-cf9e-42e0-be17-e2c3e1d2600d', 897)
         recs = [x for x in items if x[0] not in seen_items][:N]
         return recs
     return GetRecommendation
@@ -57,13 +58,15 @@ def GenderMostPopular(train, profile, N):
     mitems, fitems = {}, {}
     for user in train.keys():
         if profile[user]['gender'] == 'm':
-            temp = mitems                                           # 赋值（注意赋值、浅拷贝和深拷贝的区别）
+            # 赋值（注意赋值、浅拷贝和深拷贝的区别）
+            temp = mitems
         elif profile[user]['gender'] == 'f':
             temp = fitems
         for item in train[user]:
             if item not in temp.keys():
                 temp[item] = 0
             temp[item] += 1
+    # mitems: [('b', 32), ('d', 20),...]格式
     mitems = sorted(mitems.items(), key=lambda x: x[1], reverse=True)
     fitems = sorted(fitems.items(), key=lambda x: x[1], reverse=True)
     # [('b', 32), ('d', 20), ('c', 3), ('a', 1)] 格式
@@ -137,11 +140,82 @@ def AgeMostPopular(train, profile, N):
 
 
 def CountryMostPopular(train, profile, N):
-    pass
+    '''
+    :params: train, 训练数据
+    :params: profile, 用户的注册信息
+    :params: N, 推荐TopN物品的个数
+    :return: GetRecommendation, 获取推荐结果的接口
+    '''
+    # 分城市进行统计
+    items = {}
+    for user in train:
+        country = profile[user]['country']
+        if country not in items:
+            items[country] = {}
+        for i in train[user]:
+            if i not in items[country]:
+                items[country][i] = 0
+            items[country][i] += 1
+    for country in items:
+        items[country] = sorted(items[country].items(),
+                                key=lambda x: x[1], reverse=True)
+    mostPopular = MostPopular(train, profile, N)
+
+    def GetRecommendation(user):
+        seen_items = set(train[user]) if user in train.keys() else set()
+        country = profile[user]['country']
+        if country in items.keys():
+            recs = [x for x in items[country] if x[0] not in seen_items][:N]
+        else:
+            recs = mostPopular(user)
+
+    return GetRecommendation
 
 
 def DemographicMostPopular(train, profile, N):
-    pass
+    ''' same gender/age_bin/country
+    :params: train, 训练数据
+    :params: profile, 用户的注册信息
+    :params: N, 推荐TopN物品的个数
+    :return: GetRecommendation, 获取推荐结果的接口
+    '''
+    # 建立多重字典，将缺失值当成other，同归为一类进行处理
+    items = {}
+    for user in train.keys():
+        # items[gender][age][country]嵌套字典：items[gender][age][country][i] = pop
+        gender = profile[user]['gender']
+        if gender not in items.keys():
+            items[gender] = {}
+        age = profile[user]['age'] // 10
+        if age not in items[gender].keys():
+            items[gender][age] = {}
+        country = profile[user]['country']
+        if country not in items[gender][age].keys():
+            items[gender][age][country] = {}
+        for i in train[user]:
+            if i not in items[gender][age][country].keys():
+                items[gender][age][country][i] = 0
+            items[gender][age][country][i] += 1
+    for gender in items.keys():
+        for age in items[gender].keys():
+            for country in items[gender][age].keys():
+                items[gender][age][country] = sorted(
+                    items[gender][age][country].items(), key=lambda x: x[1], reverse=True)
+    mostPopular = MostPopular(train, profile, N)
+
+    def GetRecommendation(user):
+        seen_items = set(train[user]) if user in train.keys() else set()
+        gender = profile[user]['gender']
+        age = profile[user]['age']
+        country = profile[user]['country']
+        if gender in items and age in items[gender] and country in items[gender][age]:
+            recs = [x for x in items[gender][age]
+                    [country] if x[0] not in seen_items][:N]
+        else:
+            recs = mostPopular(user)
+        return recs
+
+    return GetRecommendation
 
 
 class Experiment():
@@ -195,6 +269,6 @@ if __name__ == '__main__':
     # train, test, profile = dataset.splitData(5, 2)
     M = 5
     N = 10
-    method = 'AgeMostPopular'
+    method = 'DemographicMostPopular'
     exp = Experiment(M, N, method=method)
     exp.run()

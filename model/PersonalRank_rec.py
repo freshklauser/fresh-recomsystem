@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Administrator
 # @Date:   2019-08-26 10:37:54
-# @Last Modified by:   kkkk
-# @Last Modified time: 2019-08-29 15:00:10
+# @Last Modified by:   sniky-lyu
+# @Last Modified time: 2019-09-05 23:19:31
 # -------------------------------------------------------------------------------
 # PersonalRank算法对通过连接的边为每个节点打分，具体来讲，在PersonalRank算法中，不区分用户和商品，
 # 因此计算用户A对所有的商品的感兴趣的程度就变成了对用户A计算各个节点B，C，a，b，c，d的重要程度
@@ -46,7 +46,7 @@ def PersonalRank(train, alpha, N):
     items_index = {v: i + len(users_index) for i, v in enumerate(id2item)}  # {it1:}
     # print('users --> ', users_index)
     # print('items --> ', items_index)
-    dim_length = int(len(users_index) + len(items_index))
+    dim_length = int(len(users_index) + len(items_index))                   # 构建的稀疏矩阵的维度
     print('sparse matrix dimension: ', dim_length)
 
     "!! 计算转移矩阵（按照出度进行归一化, 即转化为u--v的概率p) !!"
