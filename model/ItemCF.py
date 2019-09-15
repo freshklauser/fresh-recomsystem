@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Klaus
 # @Date:   2019-08-04 23:04:28
-# @Last Modified by:   kkkk
-# @Last Modified time: 2019-08-29 14:53:39
+# @Last Modified by:   sniky-lyu
+# @Last Modified time: 2019-09-08 17:56:40
 # ------------------------------------------------------------------------------
 # 代码模块化在不同的py文件中，用itemCF来做比赛的Baseline
 # 将比赛数据转化为 {user1:{item1, item2, item3, ...},
@@ -58,8 +58,7 @@ def ItemCF(train, K, N):
     # 按照相似度的值对矩阵的每一行进行降序排序
     sim_item_sorted = {}
     for key, values in sim.items():
-        sim_item_sorted[key] = sorted(
-            values.items(), key=lambda x: x[1], reverse=True)[:K]
+        sim_item_sorted[key] = sorted(values.items(), key=lambda x: x[1], reverse=True)[:K]
         # sorted函数返回的是列表 list
 
     # 为待推荐的用户获取推荐接口函数
@@ -193,8 +192,7 @@ def ItemCF_Norm(train, K, N):
     # 按照相似度的值对矩阵的每一行进行降序排序
     sim_item_sorted = {}
     for key, values in sim.items():
-        sim_item_sorted[key] = sorted(
-            values.items(), key=lambda x: x[1], reverse=True)[:K]
+        sim_item_sorted[key] = sorted(values.items(), key=lambda x: x[1], reverse=True)[:K]
         # sorted函数返回的是列表 list
 
     # 为待推荐的用户获取推荐接口函数
@@ -212,8 +210,7 @@ def ItemCF_Norm(train, K, N):
                     # topK与用户已有items的两两共现余弦相似度矩阵
                     rank[i] += sim[item][i]
         # 对rank字典排序，获得 topN 对应的 item
-        rank_sorted = sorted(
-            rank.items(), key=lambda x: x[1], reverse=True)[:N]
+        rank_sorted = sorted(rank.items(), key=lambda x: x[1], reverse=True)[:N]
         '''若只保存 item，不需要#item: [item1, item2, item3, ...]'''
 #         rank_sorted = list(map(lambda x: x[0], rank_sorted))
         # 返回值是列表
@@ -236,8 +233,7 @@ class Experiment():
         self.N = N
         self.fp = fp
         self.method = method
-        self.alg = {"ItemCF": ItemCF, "ItemIUF": ItemIUF,
-                    "ItemCF_Norm": ItemCF_Norm}
+        self.alg = {"ItemCF": ItemCF, "ItemIUF": ItemIUF, "ItemCF_Norm": ItemCF_Norm}
 
     @timmer
     def worker(self, train, test):
@@ -252,8 +248,7 @@ class Experiment():
 
     @timmer
     def run(self):
-        metrics = {'Precision': 0, 'Recall': 0,
-                   'Coverage': 0, 'Popularity': 0}
+        metrics = {'Precision': 0, 'Recall': 0, 'Coverage': 0, 'Popularity': 0}
         dataset = Dataset(self.fp)
         for ii in range(self.M):
             train, test, _ = dataset.splitData(self.M, ii)
@@ -261,8 +256,7 @@ class Experiment():
             metric = self.worker(train, test)
             metrics = {k: metrics[k] + metric[k] for k in metrics}
         metrics = {k: metrics[k] / self.M for k in metrics}
-        print('Average Result (M={}, N={}, ratio={}): {}'.format(
-            self.M, self.N, self.ratio, metrics))
+        print('Average Result (M={}, N={}, ratio={}): {}'.format(self.M, self.N, self.ratio, metrics))
 
 
 if __name__ == '__main__':
