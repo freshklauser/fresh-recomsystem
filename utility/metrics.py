@@ -56,9 +56,10 @@ class Metric():
         '''覆盖率：最终的推荐列表中包含多大比例的 **物品**'''
         all_item, recom_item = set(), set()
         for user in self.test.keys():                                   # test 中的 user
+            if user not in self.train.keys():
+                print('user-{} in test is not in train!!')
+                continue
             for item in self.train[user]:                               # test中user在train中包含的所有item
-                if user not in self.train.keys():
-                    continue
                 all_item.add(item)                                      # 所有物品集合 I
             rank = self.recs[user]
             for item, score in rank:
@@ -80,9 +81,10 @@ class Metric():
         for user in self.test.keys():
             rank = self.recs[user]                                      # 向test中的 user 推荐topN 物品
             for item, score in rank:
-                # 对每个物品的流行度取对数运算, 防止长尾问题带来的北流行物品主导的推荐（避免热门推荐）
-                popular += math.log(1 + item_popularity[item])
-                num += 1                                                # 汇总所有user的总推荐物品个数
+                if item in item_popularity:                 # (冷启动一定要做这个判断)判断item是否在热门列表中
+                    # 对每个物品的流行度取对数运算, 防止长尾问题带来的北流行物品主导的推荐（避免热门推荐）
+                    popular += math.log(1 + item_popularity[item])
+                    num += 1                                               # 汇总所有user的总推荐物品个数
         return round(popular / num, 6)                                  # 计算平均流行度 = popular / n
 
     def eval(self):

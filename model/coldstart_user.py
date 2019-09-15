@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: F1684324
 # @Date:   2019-08-28 16:40:23
-# @Last Modified by:   Klaus
-# @Last Modified time: 2019-09-06 23:02:52
+# @Last Modified by:   sniky-lyu
+# @Last Modified time: 2019-09-08 16:47:49
 # ------------------------------------------------------------------------------
 # Description:
 # MostPopular
@@ -199,8 +199,7 @@ def DemographicMostPopular(train, profile, N):
     for gender in items.keys():
         for age in items[gender].keys():
             for country in items[gender][age].keys():
-                items[gender][age][country] = sorted(
-                    items[gender][age][country].items(), key=lambda x: x[1], reverse=True)
+                items[gender][age][country] = sorted(items[gender][age][country].items(), key=lambda x: x[1], reverse=True)
     mostPopular = MostPopular(train, profile, N)
 
     def GetRecommendation(user):
