@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: F1684324
 # @Date:   2019-07-31 09:12:09
-# @Last Modified by:   kkkk
-# @Last Modified time: 2019-08-29 14:59:49
+# @Last Modified by:   KlausLyu
+# @Last Modified time: 2019-09-16 15:47:20
 
 import sys
 sys.path.append("..")
@@ -76,7 +76,7 @@ class Experiment():
     @timmer
     def run(self):
         metrics = {'Precision': 0, 'Recall': 0,
-                   'Coverage': 0, 'Popularity': 0}
+                   'Coverage': 0, 'Popularity': 0, 'Diversity':0}
         dataset = Dataset(self.fp)
         for ii in range(self.M):
             train, test, _ = dataset.splitData(self.M, ii)
@@ -84,8 +84,7 @@ class Experiment():
             metric = self.worker(train, test)
             metrics = {k: metrics[k] + metric[k] for k in metrics}
         metrics = {k: metrics[k] / self.M for k in metrics}
-        print('Average Result (M={}, K={}, N={}): {}'.format(
-            self.M, self.K, self.N, metrics))
+        print('Average Result (M={}, K={}, N={}): {}'.format(self.M, self.K, self.N, metrics))
 
 
 if __name__ == "__main__":

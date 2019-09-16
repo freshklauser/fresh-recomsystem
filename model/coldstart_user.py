@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: F1684324
 # @Date:   2019-08-28 16:40:23
-# @Last Modified by:   sniky-lyu
-# @Last Modified time: 2019-09-08 16:47:49
+# @Last Modified by:   KlausLyu
+# @Last Modified time: 2019-09-16 15:46:22
 # ------------------------------------------------------------------------------
 # Description:
 # MostPopular
@@ -250,7 +250,7 @@ class Experiment():
 
     # @timmer
     def run(self):
-        metrics = {'Precision': 0, 'Recall': 0, 'Coverage': 0, 'Popularity': 0}
+        metrics = {'Precision': 0, 'Recall': 0, 'Coverage': 0, 'Popularity': 0, 'Diversity':0}
         dataset = Dataset(self.fp, self.up)
         for i in range(self.M):
             train, test, profile = dataset.splitData(self.M, i)

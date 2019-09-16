@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Klaus
 # @Date:   2019-08-04 23:04:28
-# @Last Modified by:   sniky-lyu
-# @Last Modified time: 2019-09-08 17:56:40
+# @Last Modified by:   KlausLyu
+# @Last Modified time: 2019-09-16 15:46:38
 # ------------------------------------------------------------------------------
 # 代码模块化在不同的py文件中，用itemCF来做比赛的Baseline
 # 将比赛数据转化为 {user1:{item1, item2, item3, ...},
@@ -248,7 +248,7 @@ class Experiment():
 
     @timmer
     def run(self):
-        metrics = {'Precision': 0, 'Recall': 0, 'Coverage': 0, 'Popularity': 0}
+        metrics = {'Precision': 0, 'Recall': 0, 'Coverage': 0, 'Popularity': 0, 'Diversity':0}
         dataset = Dataset(self.fp)
         for ii in range(self.M):
             train, test, _ = dataset.splitData(self.M, ii)

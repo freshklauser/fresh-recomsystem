@@ -52,19 +52,38 @@ class Metric():
             All += len(test_items)                                      # 分母： sum(T(u))
         return round(hit / All * 100, 2)                                # recall = (T(u) & R(u)) / T(u)
 
+
     def coverage(self):
-        '''覆盖率：最终的推荐列表中包含多大比例的 **物品**'''
+        # 覆盖率：最终的推荐列表中包含多大比例的 **物品**
+        # 最简单定义：推荐系统能够推荐出来的物品占总物品集合的比例
+        # 总物品集合I: 有采用所有train中的user的总物品集合，也有才有test中用户在train集合中的物品集合
         all_item, recom_item = set(), set()
         for user in self.test.keys():                                   # test 中的 user
             if user not in self.train.keys():
                 print('user-{} in test is not in train!!')
                 continue
             for item in self.train[user]:                               # test中user在train中包含的所有item
-                all_item.add(item)                                      # 所有物品集合 I
+                all_item.add(item)                                      # 所有物品集合 I(train中有而test中没有的user的物品不在I中)
             rank = self.recs[user]
             for item, score in rank:
                 recom_item.add(item)                                    # 推荐的物品集合 R(u)
         return round(len(recom_item) / len(all_item) * 100, 2)          # coverage = #R(u) / #I
+
+
+    # 定义覆盖率指标计算方式
+    def coverage_all(self):
+        all_item, recom_item = set(), set()
+        # 所用train中user的总物品集合作为I (train中的所有user的物品都在I中 -- test中的user在train中)
+        for user in self.train:
+            for item in self.train[user]:
+                all_item.add(item)
+        # test中的所有user的推荐列表
+        for user in self.test:
+            rank = self.recs[user]
+            for item, score in rank:
+                recom_item.add(item)
+        return round(len(recom_item) / len(all_item) * 100, 2)
+
 
     def popularity(self):
         '''新颖度：推荐的是目标用户喜欢的但未发生过的用户-行为
@@ -87,11 +106,55 @@ class Metric():
                     num += 1                                               # 汇总所有user的总推荐物品个数
         return round(popular / num, 6)                                  # 计算平均流行度 = popular / n
 
+
+    def diversity(self):
+        '''定义多样性指标计算方式'''
+        # 计算item_vec，每个tag的个数
+        item_tags = {}
+        for user in self.train:
+            for item in self.train[user]:
+                if item not in item_tags:
+                    item_tags[item] = {}
+                for tag in self.train[user][item]:
+                    if tag not in item_tags[item]:
+                        item_tags[item][tag] = 0
+                    item_tags[item][tag] += 1
+
+        # 计算两个item (i, j)的相似度
+        def CosineSim(i, j):
+            ret = 0
+            ni, nj = 0, 0
+            for tag in item_tags[i].keys():
+                ni += item_tags[i][tag] ** 2
+                if tag in item_tags[j].keys():
+                    # i 和 j 都打标签 tag
+                    ret += item_tags[i][tag] * item_tags[j][tag]
+            for tag in item_tags[j].keys():
+                nj += item_tags[j][tag] ** 2
+            return ret / math.sqrt(ni * nj)
+
+        # 计算diversity
+        div = []
+        for user in self.test:
+            rank = self.recs[user]
+            sim, cnt = 0, 0
+            for i, _ in rank:
+                for j, _ in rank:
+                    if i == j:
+                        continue
+                    sim += CosineSim(i, j)
+                    cnt += 1
+            sim = sim / cnt if sim != 0 else 0      # 用户user的推荐列表的相似度
+            # 多样性
+            div.append(1 - sim)                     # 用户user的推荐列表的多样性
+        return sum(div) / len(div)                  # 所有用户的推荐列表多样性的平均值
+
     def eval(self):
         ''' 汇总 metric 指标 '''
         metric = {'Precision': self.precision(),
                   'Recall': self.recall(),
-                  'Coverage': self.coverage(),
-                  'Popularity': self.popularity()}
+                  'Coverage': self.coverage_all(),
+                  'Popularity': self.popularity(),
+                  'Diversity': self.diversity()}
         print('Metric: {}'.format(metric))
         return metric

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Klaus
 # @Date:   2019-09-05 23:46:50
-# @Last Modified by:   sniky-lyu
-# @Last Modified time: 2019-09-08 18:29:57
+# @Last Modified by:   KlausLyu
+# @Last Modified time: 2019-09-16 15:45:30
 # ------------------------------------------------------------------------------
 # Description: 基于内容的KNN算法实现物品冷启动
 # >> 建立 word-item 倒排表
@@ -270,7 +270,7 @@ class Experiment():
     # 多次实验取平均
     @timmer
     def run(self):
-        metrics = {'Precision': 0, 'Recall': 0, 'Coverage': 0, 'Popularity': 0}
+        metrics = {'Precision': 0, 'Recall': 0, 'Coverage': 0, 'Popularity': 0, 'Diversity':0}
         dataset = Dataset(self.fp, self.ip)
         for ii in range(self.M):
             train, test, content = dataset.splitData(self.M, ii)

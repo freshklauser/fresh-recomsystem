@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Klaus
 # @Date:   2019-08-22 20:20:02
-# @Last Modified by:   sniky-lyu
-# @Last Modified time: 2019-08-30 22:22:56
+# @Last Modified by:   KlausLyu
+# @Last Modified time: 2019-09-16 15:45:44
 # ------------------------------------------------------------------------------
 # 隐语义模型
 # ------------------------------------------------------------------------------
@@ -59,8 +59,7 @@ def LFM(train, ratio, F, N, alpha, lamb, step):
             num_pos = len(seen)
             # 从所有物品items中根据流行度pops的值作为概率依据选择pum_pos*ratio*3个样本，依次将这些样本
             # 与有过行为的样品seen做对比，只选取不在seen中的物品，取len(pos)*ratio个样本作为负样本
-            item = np.random.choice(items, int(
-                num_pos * ratio * 3), pops)      # 用法见tips
+            item = np.random.choice(items, int(num_pos * ratio * 3), pops)      # 用法见tips
             item_neg = []
             count = 0
             for element in item:
@@ -149,7 +148,7 @@ class Experiment():
 
     @timmer
     def run(self):
-        metrics = {'Precision': 0, 'Recall': 0, 'Coverage': 0, 'Popularity': 0}
+        metrics = {'Precision': 0, 'Recall': 0, 'Coverage': 0, 'Popularity': 0, 'Diversity':0}
         dataset = Dataset(self.fp)
         for i in range(self.M):
             train, test, _ = dataset.splitData(self.M, i)
