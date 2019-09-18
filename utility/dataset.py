@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: F1684324
 # @Date:   2019-08-28 09:56:29
-# @Last Modified by:   sniky-lyu
-# @Last Modified time: 2019-08-30 22:59:06
+# @Last Modified by:   KlausLyu
+# @Last Modified time: 2019-09-17 11:04:07
 # ------------------------------------------------------------------------------
 # Description:
 # Notes:
@@ -53,6 +53,7 @@ class Dataset():
                 # data form filepath of "ml-1m/ratings.dat"
                 data.append(tuple(map(int, l.strip().split('::')[:2])))
             return data
+
         "-------------------- dataset: lastfm --------------------"
         if os.path.dirname(filepath).split(os.sep)[-1] == 'lastfm-dataset-360K':
             print('Current dataset: {}'.format('lastfm-dataset-360K'))

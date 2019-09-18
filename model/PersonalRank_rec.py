@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Administrator
 # @Date:   2019-08-26 10:37:54
-# @Last Modified by:   sniky-lyu
-# @Last Modified time: 2019-09-05 23:19:31
+# @Last Modified by:   KlausLyu
+# @Last Modified time: 2019-09-17 09:59:28
 # -------------------------------------------------------------------------------
 # PersonalRank算法对通过连接的边为每个节点打分，具体来讲，在PersonalRank算法中，不区分用户和商品，
 # 因此计算用户A对所有的商品的感兴趣的程度就变成了对用户A计算各个节点B，C，a，b，c，d的重要程度
@@ -57,7 +57,7 @@ def PersonalRank(train, alpha, N):
                 item_user[item] = []
             item_user[item].append(user)
     # print('item_user', '-->', item_user)
-    # 矩阵data中user-->item 部分
+    # 矩阵data行中user-->item 部分
     data, row, col = [], [], []
     for u in train.keys():
         for v in train[u]:
@@ -65,7 +65,7 @@ def PersonalRank(train, alpha, N):
             data.append(1 / len(train[u]))
             row.append(users_index[u])
             col.append(items_index[v])
-    # 矩阵data中 item-->user 部分
+    # 矩阵data行中 item-->user 部分
     for v in item_user.keys():
         for u in item_user[v]:
             # print(items_index[v], '->', users_index[u], ':', 1 / len(item_user[v]))
@@ -137,7 +137,7 @@ class Experiment():
     @timmer
     def run(self):
         metrics = {'Precision': 0, 'Recall': 0,
-                   'Coverage': 0, 'Popularity': 0}
+                   'Coverage': 0, 'Popularity': 0, 'Diversity':0}
         dataset = Dataset(self.fp)
         for ii in range(self.M):
             train, test, _ = dataset.splitData(self.M, ii)
@@ -145,8 +145,7 @@ class Experiment():
             metric = self.worker(train, test)
             metrics = {k: metrics[k] + metric[k] for k in metrics}
         metrics = {k: metrics[k] / self.M for k in metrics}
-        print('Average Result (M={}, N={}, ratio={}): {}'.format(
-            self.M, self.N, self.ratio, metrics))
+        print('Average Result (M={}, N={}, ratio={}): {}'.format(self.M, self.N, self.ratio, metrics))
 
 
 if __name__ == '__main__':
