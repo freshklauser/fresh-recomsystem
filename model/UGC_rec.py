@@ -2,16 +2,16 @@
 # @Author: F1684324
 # @Date:   2019-09-16 09:29:34
 # @Last Modified by:   KlausLyu
-# @Last Modified time: 2019-09-16 17:20:44
+# @Last Modified time: 2019-09-17 11:17:55
 # ------------------------------------------------------------------------------
 # Description:
 # dataset1: user_taggedbookmarks.dat:(userID / bookmarkID / tagID / day month / year / hour / minute / second)
 # 算法实现
 # SimpleTagBased:
-    # 1)统计每个用户最常用的标签, user_tags
-    # 2)对于每个标签 统计被打过这个标签最多的物品, tag_items
-    # 3)对于每个用户，首先找到他最常用的的标签，然后找到具有这些标签的最热门的物品推荐给该用户
-    # 4)计算用户u对物品i的兴趣： p(u,i) = sum( n(u,b) * n(b,i) )
+# 1)统计每个用户最常用的标签, user_tags
+# 2)对于每个标签 统计被打过这个标签最多的物品, tag_items
+# 3)对于每个用户，首先找到他最常用的的标签，然后找到具有这些标签的最热门的物品推荐给该用户
+# 4)计算用户u对物品i的兴趣： p(u,i) = sum( n(u,b) * n(b,i) )
 # TagBasedTFIDF
 # TagBasedTFIDF++
 # TagExtend
@@ -21,7 +21,7 @@ sys.path.append("..")
 
 import random
 import math
-import numpy as np
+# import numpy as np
 from utility.decora import timmer
 from utility.metrics import Metric
 
@@ -120,7 +120,7 @@ def SimpleTagBased(train, N):
                 if item in seen_items:
                     continue
                 if item not in rank:                # 如果item不在rank中, 设为0
-                    rank[item]= 0
+                    rank[item] = 0
                 # 计算用户u对物品i的兴趣： p(u,i) = sum( n(u,b) * n(b,i) )
                 rank[item] += user_tags[user][tag] * tag_items[tag][item]
         rank = sorted(rank.items(), key=lambda x: x[1], reverse=True)
@@ -174,7 +174,7 @@ def TagBasedTFIDF(train, N):
                 if item in seen_items:
                     continue
                 if item not in rank:                # 如果item不在rank中, 设为0
-                    rank[item]= 0
+                    rank[item] = 0
                 # 计算用户u对物品i的兴趣： p(u,i) = sum( n(u,b) * n(b,i) / log(1 + n(b)))
                 rank[item] += int(user_tags[user][tag] * tag_items[tag][item] / math.log(1 + tag_pop[tag]))
         rank = sorted(rank.items(), key=lambda x: x[1], reverse=True)
@@ -232,7 +232,7 @@ def TagBasedTFIDF_imp(train, N):
                 if item in seen_items:
                     continue
                 if item not in rank:                # 如果item不在rank中, 设为0
-                    rank[item]= 0
+                    rank[item] = 0
                 # 计算用户u对物品i的兴趣： p(u,i) = sum( n(u,b) * n(b,i) / log(1 + n(b)) / log(1 + n(i)))
                 rank[item] += int(user_tags[user][tag] * tag_items[tag][item] / math.log(1 + tag_pop[tag]) / math.log(1 + item_pop[item]))
         rank = sorted(rank.items(), key=lambda x: x[1], reverse=True)
@@ -301,7 +301,7 @@ def ExpandTagBased(train, N, M=20):
     # 扩展标签
     expand_tags = {}
     for u in user_tags.keys():
-        if len(user_tags[u].keys()) >= M:       # 满M个tag的取前20个tag，不足M个的扩展至20个
+        if len(user_tags[u].keys()) >= M:       # 满M个tag的取前M个tag，不足M个的扩展后取前M个
             expand_tags[u] = user_tags[u]
             continue
         # 不满M个标签的进行用户的标签扩展: 按照相似度扩充后降序取M个
@@ -352,7 +352,7 @@ class Experiment():
         self.N = N
         self.fp = fp
         self.rt = rt
-        self.alg = {'SimpleTagBased': SimpleTagBased, 'TagBasedTFIDF': TagBasedTFIDF, \
+        self.alg = {'SimpleTagBased': SimpleTagBased, 'TagBasedTFIDF': TagBasedTFIDF,
                     'TagBasedTFIDF_imp': TagBasedTFIDF_imp, 'ExpandTagBased': ExpandTagBased}
 
     # 定义单次实验
@@ -389,24 +389,28 @@ if __name__ == '__main__':
     exp = Experiment(M, N, rt='SimpleTagBased')
     exp.run()
 
-    # # 2. TagBasedTFIDF实验
-    # print('>>>>>>>>>>>>>>>>>>>>>>>>> TagBasedTFIDF <<<<<<<<<<<<<<<<<<<<<<<<<<')
-    # M, N = 10, 10
-    # exp = Experiment(M, N, rt='TagBasedTFIDF')
-    # exp.run()
+    # 2. TagBasedTFIDF实验
+    print('>>>>>>>>>>>>>>>>>>>>>>>>> TagBasedTFIDF <<<<<<<<<<<<<<<<<<<<<<<<<<<')
+    M, N = 10, 10
+    exp = Experiment(M, N, rt='TagBasedTFIDF')
+    exp.run()
 
-    # # 3. TagBasedTFIDF_imp 实验
-    # print('>>>>>>>>>>>>>>>>>>>>>>>>> TagBasedTFIDF_imp <<<<<<<<<<<<<<<<<<<<<<<<<<')
-    # M, N = 10, 10
-    # exp = Experiment(M, N, rt='TagBasedTFIDF')
-    # exp.run()
+    # 3. TagBasedTFIDF_imp 实验
+    print('>>>>>>>>>>>>>>>>>>>>>>>>> TagBasedTFIDF_imp <<<<<<<<<<<<<<<<<<<<<<<')
+    M, N = 10, 10
+    exp = Experiment(M, N, rt='TagBasedTFIDF_imp')
+    exp.run()
 
+    print('>>>>>>>>>>>>>>>>>>>>>>>>> ExpandTagBased <<<<<<<<<<<<<<<<<<<<<<<<<<')
+    # 4. ExpandTagBased 实验
+    M, N = 10, 10
+    exp = Experiment(M, N, rt='ExpandTagBased')
+    exp.run()
 
-    # # 4. ExpandTagBased 实验
-    # M, N = 10, 10
-    # exp = Experiment(M, N, rt='ExpandTagBased')
-    # exp.run()
-
+    # Average Result (M=10, N=10): {'Precision': 0.337, 'Recall': 0.554, 'Coverage': 3.363, 'Popularity': 2.340, 'Diversity': 0.791}
+    # Average Result (M=10, N=10): {'Precision': 0.367, 'Recall': 0.602, 'Coverage': 5.295, 'Popularity': 2.223, 'Diversity': 0.800}
+    # Average Result (M=10, N=10): {'Precision': 0.272, 'Recall': 0.446, 'Coverage': 12.047, 'Popularity': 1.281, 'Diversity': 0.746}
+    # Average Result (M=10, N=10): {'Precision': 0.344, 'Recall': 0.567, 'Coverage': 3.418, 'Popularity': 2.336, 'Diversity': 0.790}
 
     # fp = '../data/hetrec2011-delicious-2k/user_taggedbookmarks.dat'
     # train, test = Dataset(fp).splitData(5, 1)

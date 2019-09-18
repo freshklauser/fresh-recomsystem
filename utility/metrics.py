@@ -52,7 +52,6 @@ class Metric():
             All += len(test_items)                                      # 分母： sum(T(u))
         return round(hit / All * 100, 2)                                # recall = (T(u) & R(u)) / T(u)
 
-
     def coverage(self):
         # 覆盖率：最终的推荐列表中包含多大比例的 **物品**
         # 最简单定义：推荐系统能够推荐出来的物品占总物品集合的比例
@@ -69,7 +68,6 @@ class Metric():
                 recom_item.add(item)                                    # 推荐的物品集合 R(u)
         return round(len(recom_item) / len(all_item) * 100, 2)          # coverage = #R(u) / #I
 
-
     # 定义覆盖率指标计算方式
     def coverage_all(self):
         all_item, recom_item = set(), set()
@@ -83,7 +81,6 @@ class Metric():
             for item, score in rank:
                 recom_item.add(item)
         return round(len(recom_item) / len(all_item) * 100, 2)
-
 
     def popularity(self):
         '''新颖度：推荐的是目标用户喜欢的但未发生过的用户-行为
@@ -105,7 +102,6 @@ class Metric():
                     popular += math.log(1 + item_popularity[item])
                     num += 1                                               # 汇总所有user的总推荐物品个数
         return round(popular / num, 6)                                  # 计算平均流行度 = popular / n
-
 
     def diversity(self):
         '''定义多样性指标计算方式'''
@@ -158,3 +154,18 @@ class Metric():
                   'Diversity': self.diversity()}
         print('Metric: {}'.format(metric))
         return metric
+
+
+class Metric_tagrec():
+    def __init__(self, train, test, GetRecommendation):
+        '''
+        :params: train, 训练数据
+        :params: test, 测试数据
+        :params: GetRecommendation, 为某个用户获取推荐物品的接口函数
+        '''
+        self.train = train
+        self.test = test
+        self.GetRecommendation = GetRecommendation
+        self.recs = self.getRec()
+
+        # 为test中的每个用户推荐
