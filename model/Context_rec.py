@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 # @Author: KlausLyu
 # @Date:   2019-09-18 14:20:43
-# @Last Modified by:   sniky-lyu
-# @Last Modified time: 2019-09-18 22:33:30
+# @Last Modified by:   klaus
+# @Last Modified time: 2019-09-18 23:31:02
 # ------------------------------------------------------------------------------
 # Description:
 # 实现算法：
 # RecentPopular
-#   TItemCF
-#   TUserCF
-#   ItemCF
-#   UserCF
+#   TItemCF: ItemCF with fushion time information
+#   TUserCF: UserCF with fushion time information
+#   ItemCF: just ItemCF
+#   UserCF: just UserCF
 # Tips: codecs是Python中标准库的内容，而codecs.open和内置函数open（）的不同在于，
 # open函数无法打开一份由不同编码组成的同一份文件，而codecs.open如文档所说，始终
 # 以二进制模式打开，故打开就是Unicode格式，所以，codecs.open能打开由不同编码格式组成的文件。
@@ -156,7 +156,6 @@ def RecentPopular(train, K, N, alpha=1.0, t0=int(time.time())):
         return rec_items[:N]
 
     return GetRecommendation
-
 
 
 if __name__ == '__main__':
